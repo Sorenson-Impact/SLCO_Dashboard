@@ -1,0 +1,137 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(shiny)
+library(plyr)
+library(tidyverse)
+library(googlesheets)
+library(shinythemes)
+
+
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(theme = shinytheme("slate"),
+                
+                # Application title
+                titlePanel("Genentech Ride Finder"),
+                
+                # Sidebar with a slider input for number of bins 
+                  # Show a plot of the generated distribution
+                  mainPanel(
+                    leafletOutput("map")
+                  ))
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+
+}
+
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
+
+```{r}
+## example for google sheets
+library(googlesheets)
+library(plotly)
+
+
+
+gap <- gs_title("Test Copy of REACH Data Request_Updated_2018")
+myData <- gap %>%
+  gs_read()
+## Wrangling: 
+
+#transpose the data to put observations into rows 
+tData <- t(myData)
+
+#make column names the names of the first row
+colnames(tData) = tData[1, ] # assigns column names from the first row
+tData = tData[-1, ] # removes the first row from the data 
+
+#make the row names the names of the first column 
+rownames(tData) <-tData[ ,1] # assigns column names from the first row
+tData <-  tData[, -1] # removes the first row from the data 
+
+# remove the 'totals' month
+tData <- tData[-c(4, 8, 12, 16, 17), ]
+
+#remove the 'header' columns 
+tData <- tData[ ,-c(1, 11, 17, 30, 35, 43, 51, 61, 67, 73, 79, 86, 97) ]
+
+xaxis <- rownames(tData)
+xaxis
+y2 <-  tData[,1]
+y
+View(xaxis)
+ 
+### Plot Program Overview
+## plot Number of individuals randomized into REACH this month via bar graph
+randomizedChart <- plot_ly(
+  x = xaxis,
+  y = strtoi(y2), 
+  name = "Randomized Individuals",
+  type = 'bar'
+) %>% 
+  layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
+
+## plot Number of individuals randomized into REACH this month via bar graph
+months <- factor(xaxis,levels = c("January", "February", "March",  "April",   "May",  "June", "July", "August",  "September", "October", "November",  "December"))
+
+## Plot Program Overview: 
+linePlot <- plot_ly(x = months, y = strtoi(tData[,1]), name = 'Randomized', type = 'scatter', mode = 'lines+markers')  %>%
+  #Plot Number of individuals referred to REACH this month
+  add_trace(y = strtoi(tData[,2]), name = 'Referred', mode = 'lines+markers') %>%
+  #Plot Number of new clients enrolled in REACH this month
+  add_trace(y = strtoi(tData[,3]), name = 'New Clients', mode = 'lines+markers') %>%
+  #Plot Number of REACH clients actively receiving services
+  add_trace(y = strtoi(tData[,4]), name = 'Receiving Services', mode = 'lines+markers') %>%
+  #Plot Total number of individuals enrolled in REACH 
+  add_trace(y = strtoi(tData[,5]), name = 'Total Enrolled', mode = 'lines+markers') %>%
+  add_trace(y = strtoi(tData[,9]), name = 'Total Enrolled', mode = 'lines+markers')
+
+#Plot Client Infomration As Bar Chart
+p <- plot_ly(x = months, y = tData[,11], type = 'bar', name = '18-25', marker = list(color = 'rgb(49,130,189)')) %>%
+  add_trace(y = tData[,12], name = '26-35', marker = list(color = 'rgb(204,204,204)')) %>%
+  add_trace(y = tData[,13], name = '35-44', marker = list(color = 'rgb(190,130,50)')) %>%
+  add_trace(y = tData[,14], name = '45+', marker = list(color = 'rgb(20,20,50)')) %>%
+  layout(xaxis = list(title = "", tickangle = -45),
+         yaxis = list(title = ""),
+         margin = list(b = 100),
+         barmode = 'group')
+p
+linePlot
+firstBarChart
+
+View(tData)
+
+
+```
+
+
+```{r}
+## example for google sheets
+library(googlesheets)
+gs_gap() %>% 
+  gs_copy(to = "Gapminder")
+
+gs_ls("Gapminder")
+
+gap <- gs_title("Gapminder")
+myData <- gap %>%
+  gs_read(ws = "Oceania")
+myData
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).

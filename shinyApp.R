@@ -92,7 +92,6 @@ server <- function(input, output) {
   myData <- gap %>%
     gs_read()
   
-  #myData <- read.csv("Test Copy of REACH Data Request_Updated_2018 - Sheet1.csv")
   ## Wrangling: 
   
   #transpose the data to put observations into rows 
@@ -134,8 +133,6 @@ server <- function(input, output) {
     layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
   })
   
-  
-  
   # Client Information 
   # Plot Client Information as Line Graph
   output$agesLinePlot <- renderPlotly({agesLinePlot <- plot_ly(x = months, y = strtoi(tData[,11]), name = '18-25', type = 'scatter', mode = 'lines+markers')  %>%
@@ -147,7 +144,6 @@ server <- function(input, output) {
     add_trace(y = strtoi(tData[,14]), name = '45+', mode = 'lines+markers')%>%
     layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
   })
-  
   
   #Plot Race as Line Graph
   output$raceLinePlot <- renderPlotly({ raceLinePlot <- plot_ly(x = months, y = strtoi(tData[,15]), name = 'American Indian', type = 'scatter', mode = 'lines+markers')  %>%
@@ -169,7 +165,6 @@ server <- function(input, output) {
   })
   
   # Referrals and Randomization 
-  #bar code:
   output$randomizedBarPlot <- renderPlotly({randomizedBarPlot <- plot_ly(x = months, y = strtoi(tData[,27]), type = 'bar', name = 'Randomized into REACH') %>%
     layout(yaxis = list(title = 'Number of Individuals Randomized to REACH'), xaxis = list(title = 'Month'))
   })
@@ -185,8 +180,6 @@ server <- function(input, output) {
     layout(yaxis = list(title = 'Assessments Conducted'), xaxis = list(title = 'Month'))
   })
   
-  ######
-  
   # Service Delivery
   output$serviceDeliveryLinePlot <- renderPlotly({serviceDeliveryLinePlot <- plot_ly(x = months, y = strtoi(tData[,31]), name = 'Intensive Treatment', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = strtoi(tData[,32]), name = 'Transition', mode = 'lines+markers') %>%
@@ -197,16 +190,9 @@ server <- function(input, output) {
     layout(yaxis = list(title = 'Number of Individuals Receiving'), xaxis = list(title = 'Month'))
   })
   
-  
-  
-  
   output$highestNeedBarPlot <- renderPlotly({ highestNeedBarPlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,36])), type = 'bar', name = 'Randomized into REACH') %>%
     layout(yaxis = list(title = '% of Time Spent On Highest Priority'), xaxis = list(title = 'Month'))
   })
-  
-  
-  
-  
   
   # Employment 
   output$employmentLinePlot <- renderPlotly({employmentLinePlot <- plot_ly(x = months, y = strtoi(tData[,38]), name = 'Completed Assessment', type = 'scatter', mode = 'lines+markers')  %>%
@@ -217,14 +203,12 @@ server <- function(input, output) {
     add_trace(y = strtoi(tData[,44]), name = 'Lost Their Job', mode = 'lines+markers')%>%
     layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
   })
-  
-  
   output$employmentBarPlot <- renderPlotly({employmentBarPlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,43])), type = 'bar', name = 'REACH Clients') %>%
     layout(yaxis = list(title = '% of REACH Clients Employeed'), xaxis = list(title = 'Month'))
   })
   
   
-  
+  # Housing
   output$housingResidentLinePlot <- renderPlotly({housingResidentLinePlot <- plot_ly(x = months, y = strtoi(tData[,45]), name = 'Completed Housing Assessments', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = strtoi(tData[,46]), name = 'In Need of Residence', mode = 'lines+markers') %>%
     add_trace(y = strtoi(tData[,47]), name = 'Placed in REACH Recovery Residence', mode = 'lines+markers') %>%
@@ -232,21 +216,14 @@ server <- function(input, output) {
     add_trace(y = strtoi(tData[,50]), name = 'Unique Clients served in REACH Recovery', mode = 'lines+markers')%>%
     layout(yaxis = list(title = 'Number of Clients'), xaxis = list(title = 'Month'))
   })
-  
-  
   output$housingCapacityLinePlot <- renderPlotly({ housingCapacityLinePlot <- plot_ly(x = months, y = strtoi(tData[,49]), name = 'Average Length of Stay', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = strtoi(tData[,51]), name = 'Beds Available', mode = 'lines+markers') %>%
     layout(yaxis = list(title = 'Number'), xaxis = list(title = 'Month'))
   })
-  
-  
   output$bedDaysLinePlot <- renderPlotly({bedDaysLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,52])), name = 'In Residence', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = as.numeric(sub("%", "", tData[,53])), name = 'By Transitional', mode = 'lines+markers') %>%
     layout(yaxis = list(title = '% of Bed Days Filled'), xaxis = list(title = 'Month'))
   })
-  
-  
-  
   
   # SUD treatment
   output$SUDLinePlot <- renderPlotly({ SUDLinePlot <- plot_ly(x = months, y = strtoi(tData[,54]), name = 'SUD', type = 'scatter', mode = 'lines+markers')  %>%
@@ -263,23 +240,16 @@ server <- function(input, output) {
     layout(yaxis = list(title = 'Average Number of Hours Per Client'), xaxis = list(title = 'Month'))
   })
   
-  
-  
-  
-  
   # Recidivism 
   output$engagementsLinePlot <- renderPlotly({engagementsLinePlot <- plot_ly(x = months, y = strtoi(tData[,59]), name = 'Post-Incarceration Re-engagements', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = strtoi(tData[,55]), name = 'Successful Re-engagements', mode = 'lines+markers') %>%
     add_trace(y = strtoi(tData[,55]), name = 'Left Unsuccessfully', mode = 'lines+markers') %>%
     layout(yaxis = list(title = 'Number Completed'), xaxis = list(title = 'Month'))
   })
-  
   output$engagementsMethodsLinePlot <- renderPlotly({engagementsMethodsLinePlot <- plot_ly(x = months, y = as.double(tData[,60]), name = 'Avg. Days Between Jail and Re-enrollment', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = as.double(tData[,61]), name = 'Contact Attempts', mode = 'lines+markers') %>%
     layout(yaxis = list(title = 'Number '), xaxis = list(title = 'Month'))
   })
-  
-  
   
   #Staffing 
   output$staffingLinePlot <- renderPlotly({staffingLinePlot <- plot_ly(x = months, y = strtoi(tData[,64]), name = 'Case Managers', type = 'scatter', mode = 'lines+markers')  %>%
@@ -290,9 +260,6 @@ server <- function(input, output) {
     layout(yaxis = list(title = 'Number on Staff'), xaxis = list(title = 'Month'))
   })
   
-  
-  
-  
   #Fidelity 
   output$fidelityScoreLinePlot <- renderPlotly({fidelityScoreLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,69])), name = 'Staff Trained In Modalities', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = as.numeric(sub("%", "", tData[,70])), name = 'MRI groups with Supervision', mode = 'lines+markers') %>%
@@ -302,10 +269,7 @@ server <- function(input, output) {
     add_trace(y = as.numeric(sub("%", "", tData[,74])), name = 'Fidelity Score for TA', mode = 'lines+markers') %>%
     layout(yaxis = list(title = 'Percent (%)'), xaxis = list(title = 'Month'))
   })
-  
-  
-  
-  
+
   #Exits 
   output$exitLinePlot <- renderPlotly({exitLinePlot <- plot_ly(x = months, y = strtoi(tData[,75]), name = 'Total Unplanned Exits', type = 'scatter', mode = 'lines+markers')  %>%
     add_trace(y = strtoi(tData[,76]), name = 'Jail', mode = 'lines+markers') %>%
@@ -318,16 +282,15 @@ server <- function(input, output) {
     add_trace(y = strtoi(tData[,84]), name = 'Planned Exits', mode = 'lines+markers') %>%
     layout(yaxis = list(title = 'Number of Clients that Exitted'), xaxis = list(title = 'Month'))
   })
-  
   output$exitAttritionLinePlot <- renderPlotly({exitAttritionLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,83])), name = 'Attrition', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Percent (%)'), xaxis = list(title = 'Month'))
   })
-  
   
   #Finances
   output$financesLinePlot <- renderPlotly({financesLinePlot <- plot_ly(x = months, y = as.double(tData[,85]), name = 'Finances', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Dollars ($)'), xaxis = list(title = 'Month'))
   })
 }
+
 # Run the application 
 shinyApp(ui = ui, server = server)

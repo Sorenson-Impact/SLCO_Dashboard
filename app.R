@@ -121,7 +121,7 @@ server <- function(input, output) {
   
   
   
-  gap <- gs_title("Test Copy of REACH Data Request_Updated_2018")
+  gap <- gs_title("REACH Service Provider Report_Updated_5.2018")
   myData <- gap %>%
     gs_read()
   
@@ -142,7 +142,7 @@ server <- function(input, output) {
   tData <- tData[-c(4, 8, 12, 16, 17), ]
   
   #remove the 'header' columns 
-  tData <- tData[ ,-c(1, 11, 17, 30, 35, 43, 51, 61, 67, 73, 79, 86, 97) ]
+  tData <- tData[ ,-c(1, 9, 10, 14, 15, 20, 33, 38, 46, 53, 63, 69, 74, 80, 87, 98) ]
   
   xaxis <- rownames(tData)
   y2 <-  tData[,1]

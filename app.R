@@ -51,7 +51,7 @@ ui <- fluidPage(theme = shinytheme("paper"),
                                    h3("Employment"),
                                    h4("Client Engagement"),
                                    plotlyOutput("employmentLinePlot"), 
-                                   h4("Total Percent of Cmployment"),
+                                   h4("Total Percent of Employment"),
                                    plotlyOutput("employmentBarPlot")
                            ),
                            tabPanel("Housing",
@@ -243,20 +243,20 @@ server <- function(input, output) {
   
   # Housing
   output$housingResidentLinePlot <- renderPlotly({housingResidentLinePlot <- plot_ly(x = months, y = strtoi(tData[,45]), name = 'Completed Housing Assessments', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = strtoi(tData[,46]), name = 'In Need of Residence', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,47]), name = 'Placed in REACH Recovery Residence', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,48]), name = 'Currently Housed in REACH Recovery', mode = 'lines+markers')%>% #could error with ?
-    add_trace(y = strtoi(tData[,50]), name = 'Unique Clients served in REACH Recovery', mode = 'lines+markers')%>%
+    add_trace(y = strtoi(tData[,45]), name = 'In Need of Residence', mode = 'lines+markers') %>%
+    add_trace(y = strtoi(tData[,46]), name = 'Placed in REACH Recovery Residence', mode = 'lines+markers') %>%
+    add_trace(y = strtoi(tData[,47]), name = 'Currently Housed in REACH Recovery', mode = 'lines+markers')%>% #could error with ?
+    add_trace(y = strtoi(tData[,49]), name = 'Unique Clients served in REACH Recovery', mode = 'lines+markers')%>%
     layout(yaxis = list(title = 'Number of Clients', rangemode = "tozero"), xaxis = list(title = 'Month', ax))
   })
-  output$housingCapacityLinePlotLength <- renderPlotly({ housingCapacityLinePlot <- plot_ly(x = months, y = strtoi(tData[,49]), name = 'Average Length of Stay', type = 'scatter', mode = 'lines+markers')  %>%
+  output$housingCapacityLinePlotLength <- renderPlotly({ housingCapacityLinePlot <- plot_ly(x = months, y = strtoi(tData[,48]), name = 'Average Length of Stay', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Days', rangemode = "tozero"), xaxis = list(title = 'Month'))
   })
   output$housingCapacityLinePlotBeds <- renderPlotly({ housingCapacityLinePlot <- plot_ly(x = months, y = strtoi(tData[,51]), name = 'Beds Available', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Bed Days', rangemode = "tozero"), xaxis = list(title = 'Month'))
   })
-  output$bedDaysLinePlot <- renderPlotly({bedDaysLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,52])), name = 'In Residence', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,53])), name = 'By Transitional', mode = 'lines+markers') %>%
+  output$bedDaysLinePlot <- renderPlotly({bedDaysLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,50])), name = 'In Residence', type = 'scatter', mode = 'lines+markers')  %>%
+    add_trace(y = as.numeric(sub("%", "", tData[,51])), name = 'By Transitional', mode = 'lines+markers') %>%
     layout(yaxis = list(title = '% of Bed Days Filled', rangemode = "tozero"), xaxis = list(title = 'Month'))
   })
   

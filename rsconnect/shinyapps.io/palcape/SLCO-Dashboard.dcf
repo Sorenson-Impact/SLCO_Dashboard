@@ -1,0 +1,12 @@
+name: SLCO-Dashboard
+title: SLCO-Dashboard
+username:
+account: palcape
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 394150
+bundleId: 1515720
+url: https://palcape.shinyapps.io/SLCO-Dashboard/
+when: 1533257046.8401
+asMultiple: FALSE
+asStatic: FALSE

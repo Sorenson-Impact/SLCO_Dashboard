@@ -8,7 +8,7 @@ library(plotly)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("paper"),
-                navbarPage("Data Categories",
+                navbarPage("SLCo PFS: REACH Data Dashboard",
                            tabPanel("Dashboard",
                                     h3("Dashboard Overview"),
                                     h4("Welcome to the SLCO-REACH DataVis Dashboard"),
@@ -105,7 +105,7 @@ ui <- fluidPage(theme = shinytheme("paper"),
                            
                            ),
                 
-               HTML('<center><img src="sorenson_logo.png"></center>')
+               HTML('<center><img src="footer.jpg"></center>')
 )
 # Define server logic required to draw a histogram
 server <- function(input, output) {

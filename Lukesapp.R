@@ -47,28 +47,48 @@ ui <- fluidPage(theme = shinytheme("paper"),
                            
                            tabPanel("Referrals and Randomization",
                                     h3("Referrals and Randomization"),
+                                    selectInput(inputId = "timeunit", 
+                                                label = "Time Unit:",
+                                                c("Months" = "months",
+                                                  "Quarters" = "quarters",
+                                                  "Years" = "years")
+                                    ),
                                     h4("Randomized into REACH from Jail"),
                                     plotlyOutput("randomizedBarPlot"),
-                                    h4("Days Between Randomization and Enrollment"),
+                                    h4("Average Number of Days Between Randomization and Enrollment"),
                                     plotlyOutput("betweenEnrollmentdBarPlot"),
-                                    h4("Contacts Between Randomization and Enrollment"),
+                                    h4("Average Number of Contacts Between Randomization and Enrollment"),
                                     plotlyOutput("contactsBetweenEnrollmentdBarPlot"),
-                                    h4("Number of REACH Assessments Conducted"),
+                                    h4("Number of Intake Assessments Conducted"),
                                     plotlyOutput("assessmentsBarPlot")
                                     ), 
                            tabPanel("Service Delivery",
                                     h3("Service Delivery"),
+                                    selectInput(inputId = "timeunit", 
+                                                label = "Time Unit:",
+                                                c("Months" = "months",
+                                                  "Quarters" = "quarters",
+                                                  "Years" = "years")
+                                    ),
                                     h4("Number of Clients by Delivery Type"),
-                                    plotlyOutput("serviceDeliveryLinePlot"),
-                                    h4("Time Spent on Highest Needs of Client"),
-                                    plotlyOutput("highestNeedBarPlot") 
+                                    plotlyOutput("serviceDeliveryLinePlot")
+                                  
                            ),
                            tabPanel("Employment",
                                    h3("Employment"),
+                                   selectInput(inputId = "timeunit", 
+                                               label = "Time Unit:",
+                                               c("Months" = "months",
+                                                 "Quarters" = "quarters",
+                                                 "Years" = "years")
+                                   ),
+                                   h4("Percent of All REACH Clients Employed"),
+                                   plotlyOutput("employmentBarPlot"),
+                                   h4("Number of Clients Who Gained/Lost Employment"),
+                                   plotlyOutput("gainedlostemploymentLinePlot"),
                                    h4("Client Engagement"),
-                                   plotlyOutput("employmentLinePlot"), 
-                                   h4("Total Percent of Employment"),
-                                   plotlyOutput("employmentBarPlot")
+                                   plotlyOutput("employmentLinePlot")
+                                   
                            ),
                            tabPanel("Housing",
                                     h3("Housing"),
@@ -342,7 +362,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
     connectgaps = TRUE)  %>%
     # Asian  
       add_trace(y = reach$asian,
-                name = 'American Indian', 
+                name = 'Asian', 
                 type = 'scatter',
                 mode = 'lines+markers',
                 connectgaps = TRUE) %>%
@@ -353,7 +373,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
                 mode = 'lines+markers',
                 connectgaps = TRUE) %>% 
     # Black/African American, White
-      add_trace(y = reach$black_african_american,
+      add_trace(y = reach$black_african_american_white,
                 name = 'Black/African American, White', 
                 type = 'scatter',
                 mode = 'lines+markers',
@@ -376,7 +396,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
                 type = 'scatter',
                 mode = 'lines+markers',
                 connectgaps = TRUE) %>% 
-      layout(yaxis = list(title = 'Number of Individuals', tick0 = 0, dtick = 1, range = c(0, max(y, na.rm = TRUE) + 3)), 
+      layout(yaxis = list(title = 'Number of Individuals', tick0 = 0, dtick = 1, range = c(0,3)),  #The range arg. on this is not robust. It ought to be adaptive to the data. 
              xaxis = ax)
   })
     
@@ -415,47 +435,145 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
  
   
 ## Referrals and Randomization 
-  output$randomizedBarPlot <- renderPlotly({randomizedBarPlot <- plot_ly(x = months, y = strtoi(tData[,27]), type = 'bar', name = 'Randomized into REACH') %>%
-    layout(yaxis = list(title = 'Number of Individuals Randomized into REACH', rangemode = "tozero"), xaxis = list(title = 'Month'))
+### Randomized into Reach from Jail  
+  output$randomizedBarPlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    # Randomized
+    y = reach$number_of_individuals_randomized_into_reach_this_month, 
+    name = 'Randomized into REACH',
+    type = 'scatter',
+    mode = 'lines+marker',
+    connectgaps = TRUE) %>%
+      # Enrolled
+      add_trace(y = reach$number_of_new_clients_enrolled_in_reach_this_month,
+                name = 'Clients Enrolled in REACH',
+                moade = 'lines+markers',
+                connectgaps = TRUE) %>% 
+      # Randomized from Jail
+      add_trace(y = reach$number_of_individuals_randomized_into_reach_this_month_who_are_in_jail,
+                name = 'Randomized into REACH from jail',
+                moade = 'lines+markers',
+                connectgaps = TRUE) %>% 
+    layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), 
+           xaxis = ax)
   })
   
-  output$betweenEnrollmentdBarPlot <- renderPlotly({betweenEnrollmentdBarPlot <- plot_ly(x = months, y = as.double(tData[,28]), type = 'bar', name = 'Randomized into REACH') %>%
-    layout(yaxis = list(title = 'Avg. Days from Randomization to Enrollment'), xaxis = list(title = 'Month'))
+ 
+### Days Between Randomization and Enrollment   
+  output$betweenEnrollmentdBarPlot <- renderPlotly({plot_ly(
+    x = timeunit(),
+    # Btwn randmztn and enrllmnt 
+    y = reach$average_number_of_days_between_randomization_and_reach_enrollment,
+    name = 'Average # of Days Between Randomization and Enrollment',
+    type = 'bar') %>%
+    layout(yaxis = list(title = 'Avg. Days from Randomization to Enrollment'), 
+           xaxis = ax)
   })
   
-  output$contactsBetweenEnrollmentdBarPlot <- renderPlotly({contactsBetweenEnrollmentdBarPlot <- plot_ly(x = months, y = as.double(tData[,29]), type = 'bar', name = 'Randomized into REACH') %>%
-    layout(yaxis = list(title = 'Avg. Contacts from Randomization to Enrollment', rangemode = "tozero"), xaxis = list(title = 'Month'))
+  output$contactsBetweenEnrollmentdBarPlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$average_number_of_contacts_between_ucjc_randomization_and_reach_enrollment,
+    type = 'bar', 
+    name = 'Randomized into REACH') %>%
+    layout(yaxis = list(title = 'Avg. Contacts from Randomization to Enrollment', 
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
-  output$assessmentsBarPlot <- renderPlotly({assessmentsBarPlot <- plot_ly(x = months, y = strtoi(tData[,30]), type = 'bar', name = 'Randomized into REACH') %>%
-    layout(yaxis = list(title = 'Assessments Conducted', rangemode = "tozero"), xaxis = list(title = 'Month'))
+
+### Contacts Between Randomization and Enrollment  
+  output$assessmentsBarPlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$number_of_intake_assessments_conducted_this_month,
+    type = 'bar', 
+    name = 'Randomized into REACH') %>%
+    layout(yaxis = list(title = 'Assessments Conducted', 
+                        rangemode = "tozero"), 
+           xaxis = list(title = 'Month'))
   })
   
-  # Service Delivery
-  output$serviceDeliveryLinePlot <- renderPlotly({serviceDeliveryLinePlot <- plot_ly(x = months, y = strtoi(tData[,31]), name = 'Intensive Treatment', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = strtoi(tData[,32]), name = 'Transition', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,33]), name = 'Sustained Recovery', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,34]), name = 'Long-term Recovery', mode = 'lines+markers')%>%
-    add_trace(y = strtoi(tData[,35]), name = '200 Hours of Therapy', mode = 'lines+markers')%>%
-    add_trace(y = strtoi(tData[,37]), name = 'Completed MRT', mode = 'lines+markers')%>%
-    layout(yaxis = list(title = 'Number of Individuals Receiving', rangemode = "tozero"), xaxis = list(title = 'Month'))
+## Service Delivery
+### Number of Clients by Delivery Type
+  output$serviceDeliveryLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+      # Intensive treatment
+    y = reach$number_of_clients_in_intensive_treatment_phase_this_month, 
+    name = 'Intensive Treatment', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE) %>%
+      # Transition  
+    add_trace(y = reach$number_of_clients_in_transition_phase_this_month,
+              name = 'Transition',
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+      # Sustained Recovery
+    add_trace(y = reach$number_of_clients_in_sustained_recovery_this_month,
+              name = 'Sustained Recovery',
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+      # Long Term Recovery Mngmnt
+    add_trace(y = reach$number_of_clients_in_long_term_recovery_management_this_month,
+              name = 'Long-term Recovery',
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+      # Completed MRT
+    add_trace(y = reach$number_of_individuals_who_completed_mrt_this_month,
+              name = 'Completed MRT',
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    layout(yaxis = list(title = 'Number of Individuals', 
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
   
-  output$highestNeedBarPlot <- renderPlotly({ highestNeedBarPlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,36])), type = 'bar', name = 'Randomized into REACH') %>%
-    layout(yaxis = list(title = '% of Time Spent On Highest Priority', rangemode = "tozero"), xaxis = list(title = 'Month'))
+
+  
+## Employment
+### Percent Employed
+  output$employmentBarPlot <- renderPlotly({plot_ly(
+    x = months, 
+    y = reach$percent_percent_of_all_reach_clients_employed,
+    type = 'bar', 
+    name = 'REACH Clients') %>%
+      layout(yaxis = list(title = '% of REACH Clients Employed', 
+                          rangemode = "tozero"), 
+             xaxis = ax)
   })
   
-  # Employment 
-  output$employmentLinePlot <- renderPlotly({employmentLinePlot <- plot_ly(x = months, y = strtoi(tData[,38]), name = 'Completed Assessment', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = strtoi(tData[,39]), name = 'Obtained Employment ', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,40]), name = 'Engaged With REACH Employment', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,41]), name = 'Obtained a Job with DWS', mode = 'lines+markers')%>% #could error with ?
-    add_trace(y = strtoi(tData[,42]), name = 'Engaged with Vocational Training', mode = 'lines+markers')%>%
-    add_trace(y = strtoi(tData[,44]), name = 'Lost Their Job', mode = 'lines+markers')%>%
-    layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
+### Gained Lost Employment
+  output$gainedlostemploymentLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), y = reach$number_of_clients_who_gained_employment_this_month , 
+    name = 'Obtained Employment', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+    add_trace(y = reach$number_of_clients_who_lost_a_job_in_the_past_month,
+              name = 'Lost Employment', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    layout(yaxis = list(title = 'Number of Individuals', 
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
-  output$employmentBarPlot <- renderPlotly({employmentBarPlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,43])), type = 'bar', name = 'REACH Clients') %>%
-    layout(yaxis = list(title = '% of REACH Clients Employed', rangemode = "tozero"), xaxis = list(title = 'Month'))
+  
+  ### Employment Engagement - 
+  output$employmentLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(),
+    y = reach$number_of_clients_engaged_in_reach_employment_related_services_this_month,
+    name = 'Engaged with REACH employment related services', 
+    mode = 'lines+markers',
+    type = 'scatter',
+    connectgaps = TRUE) %>%
+      add_trace(y = reach$number_of_clients_engaged_in_vocational_education_training_programs_not_including_fsh_services_this_month,
+                name = 'Engaged in vocational education training program', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>% #could error with ?
+      layout(yaxis = list(title = 'Number of Individuals', 
+                          rangemode = "tozero"), 
+             xaxis = ax)
   })
+  
+
   
   
   # Housing

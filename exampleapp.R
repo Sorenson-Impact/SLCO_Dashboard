@@ -119,9 +119,9 @@ server <- function(input, output) {
   
   
   
-  gap <- gs_title("REACH Service Provider Report_Updated_5.2018")
+  gap <- gs_title("REACH Service Provider Report - Updated 02-08-19")
   myData <- gap %>%
-    gs_read()
+    gs_read(ws = "Updated Service Report")
   
   ## Wrangling: 
   
@@ -256,11 +256,11 @@ server <- function(input, output) {
   })
   
   # SUD treatment
-  output$SUDLinePlot <- renderPlotly({ SUDLinePlot <- plot_ly(x = months, y = strtoi(tData[,53]), name = 'SUD', type = 'scatter', mode = 'lines+markers')  %>%
+  output$SUDLinePlot <- renderPlotly({SUDLinePlot <- plot_ly(x = months, y = strtoi(tData[,53]), name = 'SUD', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Number Completed', rangemode = "tozero"), xaxis = list(title = 'Month'))
   })
   
-  output$UALinePlot <- renderPlotly({ SUDLinePlot <- plot_ly(x = months, y = strtoi(tData[,54]), name = 'UA', type = 'scatter', mode = 'lines+markers')  %>%
+  output$UALinePlot <- renderPlotly({SUDLinePlot <- plot_ly(x = months, y = strtoi(tData[,54]), name = 'UA', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Number Completed', rangemode = "tozero"), xaxis = list(title = 'Month'))
   })
   

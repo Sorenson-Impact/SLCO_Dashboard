@@ -749,16 +749,16 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
   ### Fidelity Scores
   output$fidelityScoreLinePlot <- renderPlotly({plot_ly(
     x = timeunit(), 
-    y = as.numeric(sub("%", "", reach$fidelity_score_for_mrt)) /  
+    y = as.numeric(sub("%", "", reach$fidelity_score_for_mrt)) / 100,  
     name = 'Fidelity Score for MRT', 
     type = "scatter",
     mode = 'lines+markers',
     connectgaps = TRUE) %>%
-      add_trace(y = as.numeric(sub("%", "", reach$fidelity_score_for_mi)) /  
+      add_trace(y = as.numeric(sub("%", "", reach$fidelity_score_for_mi)) / 100, 
                 name = 'Fidelity Score for MI', 
                 mode = 'lines+markers',
                 connectgaps = TRUE) %>%
-      add_trace(y = as.numeric(sub("%", "", reach$fidelity_score_for_ta_therapeutic_alliance)) /  
+      add_trace(y = as.numeric(sub("%", "", reach$fidelity_score_for_ta_therapeutic_alliance)) / 100,  
                 name = 'Fidelity Score for TA (Therapeutic Alliance)', 
                 mode = 'lines+markers',
                 connectgaps = TRUE) %>%

@@ -119,20 +119,19 @@ ui <- fluidPage(theme = shinytheme("paper"),
                            ),
                            tabPanel("Fidelity and Training",
                                     h3("Fidelity and Training"),
-                                    h4("Fidelity by Scores"),
+                                    h4("Fidelity Scores"),
                                     plotlyOutput("fidelityScoreLinePlot"),
-                                    h4("Fidelity by Percentages"),
+                                    h4("Training"),
                                     plotlyOutput("fidelitypercentageLinePlot")
                            ),
                            tabPanel("Exits",
                                     h3("Exits"),
                                     h4("Number of Exits"),
-                                    plotlyOutput("exitLinePlot"),
-                                    h4("Overall Attrition"),
-                                    plotlyOutput("exitAttritionLinePlot")
+                                    plotlyOutput("exitLinePlot")
                            ),
                            tabPanel("Financial",
                                     h3("Financial Data"),
+                                    p("Currently No Data"),
                                     plotlyOutput("financesLinePlot")
                            )
                            
@@ -747,19 +746,19 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
 
 # Fidelity and Training ----------------------------------------------------------------
   ##
-  ### Fidelity By Score
+  ### Fidelity Scores
   output$fidelityScoreLinePlot <- renderPlotly({plot_ly(
     x = timeunit(), 
-    y = reach$fidelity_score_for_mrt, 
+    y = as.numeric(sub("%", "", reach$fidelity_score_for_mrt)) /  
     name = 'Fidelity Score for MRT', 
     type = "scatter",
     mode = 'lines+markers',
     connectgaps = TRUE) %>%
-      add_trace(y = reach$fidelity_score_for_mi, 
+      add_trace(y = as.numeric(sub("%", "", reach$fidelity_score_for_mi)) /  
                 name = 'Fidelity Score for MI', 
                 mode = 'lines+markers',
                 connectgaps = TRUE) %>%
-      add_trace(y = reach$fidelity_score_for_ta_therapeutic_alliance, 
+      add_trace(y = as.numeric(sub("%", "", reach$fidelity_score_for_ta_therapeutic_alliance)) /  
                 name = 'Fidelity Score for TA (Therapeutic Alliance)', 
                 mode = 'lines+markers',
                 connectgaps = TRUE) %>%
@@ -768,7 +767,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
              xaxis = list(title = 'Month'))
   })
   
-  ### Fidelity By Percentages 
+  ### Training
   output$fidelitypercentageLinePlot <- renderPlotly({plot_ly(
     x =timeunit(),
     y = as.numeric(sub("%", "", reach$percent_percent_of_staff_trained_in_the_modalities_they_need)) / 100,
@@ -833,9 +832,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
                         rangemode = "tozero"), 
            xaxis = list(title = 'Month'))
   })
-  output$exitAttritionLinePlot <- renderPlotly({exitAttritionLinePlot <- plot_ly(x = timeunit(), y = as.numeric(sub("%", "", tData[,81])), name = 'Attrition', type = 'scatter', mode = 'lines+markers')  %>%
-    layout(yaxis = list(title = 'Percent (%)', rangemode = "tozero"), xaxis = list(title = 'Month'))
-  })
+
   
   #Finances
   output$financesLinePlot <- renderPlotly({financesLinePlot <- plot_ly(x = timeunit(), y = as.double(tData[,83]), name = 'Finances', type = 'scatter', mode = 'lines+markers')  %>%

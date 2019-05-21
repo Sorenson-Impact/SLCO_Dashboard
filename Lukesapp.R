@@ -101,23 +101,17 @@ ui <- fluidPage(theme = shinytheme("paper"),
                            ),
                            tabPanel("SUD Treatment",
                                     h3("SUD Treatment"),
-                                    h4("SUD Numbers"),
-                                    plotlyOutput("SUDLinePlot"), 
-                                    h4("SUD hourly breakdown"),
-                                    plotlyOutput("SUDBarPlot"),
-                                    h3("UA Treatment"),
-                                    h4("UA Numbers"),
-                                    plotlyOutput("UALinePlot"),
-                                    h4("UA Breakdown"),
-                                    plotlyOutput("UASLinePlot")
-                                    
+                                    h4("Number Of UAs Conducted"),
+                                    plotlyOutput("UAsLinePlot"), 
+                                    h4("UA Percentage Breakdown"),
+                                    plotlyOutput("UAPercentLinePlot")
                            ),
                            tabPanel("Recidivism",
                                     h3("Recidivism"),
-                                    h4("Engagements Number"),
+                                    h4("Re-engagements"),
                                     plotlyOutput("engagementsLinePlot"), 
-                                    h4("Contacts to disengaged individuals"),
-                                    plotlyOutput("engagementsMethodsLinePlot")
+                                    h4("Average Number Of Direct Contact Attempts To Disengaged Individuals"),
+                                    plotlyOutput("engagementcontactattemptsLinePlot")
                            ),
                            tabPanel("Staffing",
                                     h3("Staffing"),
@@ -125,7 +119,10 @@ ui <- fluidPage(theme = shinytheme("paper"),
                            ),
                            tabPanel("Fidelity and Training",
                                     h3("Fidelity and Training"),
-                                    plotlyOutput("fidelityScoreLinePlot") 
+                                    h4("Fidelity by Scores"),
+                                    plotlyOutput("fidelityScoreLinePlot"),
+                                    h4("Fidelity by Percentages"),
+                                    plotlyOutput("fidelitypercentageLinePlot")
                            ),
                            tabPanel("Exits",
                                     h3("Exits"),
@@ -256,7 +253,8 @@ timeunit <- reactive({
   }
 })
 
-## Program Overview 
+
+# Program Overview --------------------------------------------------------
 ### Program Overview
 #### Program Overview Percentages
 output$enrollmentpercentPlot <- renderPlotly({plot_ly(
@@ -433,7 +431,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
              xaxis = ax)
   })
  
-  
+# Referrals and Randomization ---------------------------------------------  
 ## Referrals and Randomization 
 ### Randomized into Reach from Jail  
   output$randomizedBarPlot <- renderPlotly({plot_ly(
@@ -457,6 +455,9 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
     layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), 
            xaxis = ax)
   })
+
+
+
   
  
 ### Days Between Randomization and Enrollment   
@@ -491,7 +492,8 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
            xaxis = list(title = 'Month'))
   })
   
-## Service Delivery
+
+# Service Delivery --------------------------------------------------------
 ### Number of Clients by Delivery Type
   output$serviceDeliveryLinePlot <- renderPlotly({plot_ly(
     x = timeunit(), 
@@ -528,7 +530,8 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
   
 
   
-## Employment
+
+# Employment --------------------------------------------------------------
 ### Percent Employed
   output$employmentBarPlot <- renderPlotly({plot_ly(
     x = months, 
@@ -576,88 +579,266 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
 
   
   
-  # Housing
-  output$housingResidentLinePlot <- renderPlotly({housingResidentLinePlot <- plot_ly(x = months, y = strtoi(tData[,45]), name = 'Completed Housing Assessments', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = strtoi(tData[,45]), name = 'In Need of Residence', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,46]), name = 'Placed in REACH Recovery Residence', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,47]), name = 'Currently Housed in REACH Recovery', mode = 'lines+markers')%>% #could error with ?
-    add_trace(y = strtoi(tData[,49]), name = 'Unique Clients served in REACH Recovery', mode = 'lines+markers')%>%
-    layout(yaxis = list(title = 'Number of Clients', rangemode = "tozero"), xaxis = list(title = 'Month', ax))
-  })
-  output$housingCapacityLinePlotLength <- renderPlotly({ housingCapacityLinePlot <- plot_ly(x = months, y = strtoi(tData[,48]), name = 'Average Length of Stay', type = 'scatter', mode = 'lines+markers')  %>%
-    layout(yaxis = list(title = 'Days', rangemode = "tozero"), xaxis = list(title = 'Month'))
-  })
-  output$bedDaysLinePlot <- renderPlotly({bedDaysLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,50])), name = 'In Residence', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,51])), name = 'By Transitional', mode = 'lines+markers') %>%
-    layout(yaxis = list(title = '% of Bed Days Filled', rangemode = "tozero"), xaxis = list(title = 'Month'))
-  })
-  
-  # SUD treatment
-  output$SUDLinePlot <- renderPlotly({SUDLinePlot <- plot_ly(x = months, y = strtoi(tData[,53]), name = 'SUD', type = 'scatter', mode = 'lines+markers')  %>%
-    layout(yaxis = list(title = 'Number Completed', rangemode = "tozero"), xaxis = list(title = 'Month'))
-  })
-  
-  output$UALinePlot <- renderPlotly({SUDLinePlot <- plot_ly(x = months, y = strtoi(tData[,54]), name = 'UA', type = 'scatter', mode = 'lines+markers')  %>%
-    layout(yaxis = list(title = 'Number Completed', rangemode = "tozero"), xaxis = list(title = 'Month'))
-  })
-  
-  output$UASLinePlot <- renderPlotly({UASLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,55])), name = 'Positive', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,56])), name = 'No-show', mode = 'lines+markers') %>%
-    layout(yaxis = list(title = 'Percent (%)', rangemode = "tozero"), xaxis = list(title = 'Month'))
+
+# Housing -----------------------------------------------------------------
+  ##
+  ### Client Numbers
+  output$housingResidentLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(),
+    y = reach$number_of_new_placements_to_the_reach_recovery_residence_this_month,
+    name = 'New Placements To Recovery Residence',
+    type = 'scatter',
+    mode = 'lines+markers',
+    connectgaps = TRUE) %>%
+    add_trace(y = reach$number_of_returning_clients_to_recovery_residence_this_month,
+              name = 'Returning Clients to Recovery Residence',
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$number_of_unique_clients_served_by_recovery_residence_this_month,
+              name = 'Unique Clients Served by Recovery Residence',
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    layout(yaxis = list(title = 'Number of Clients', 
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
   
-  output$SUDBarPlot <- renderPlotly({SUDBarPlot <- plot_ly(x = months, y = as.double(sub("%", "", tData[,57]))/100, type = 'bar', name = 'REACH Clients') %>% #divide by 100 as hours are entered as a percentage
-    layout(yaxis = list(title = 'Average Number of Hours Per Client', rangemode = "tozero"), xaxis = list(title = 'Month'))
+  ### Average Length of Stay
+  output$housingCapacityLinePlotLength <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$average_length_of_stay_in_days_in_recovery_residence,
+    name = 'Average Length of Stay In Recovery Residence', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE
+    )  %>%
+    layout(yaxis = list(title = 'Days',
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
   
-  # Recidivism 
-  output$engagementsLinePlot <- renderPlotly({engagementsLinePlot <- plot_ly(x = months, y = strtoi(tData[,58]), name = 'Post-Incarceration Re-engagements', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = strtoi(tData[,55]), name = 'Successful Re-engagements', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,55]), name = 'Left Unsuccessfully', mode = 'lines+markers') %>%
-    layout(yaxis = list(title = 'Number Completed', rangemode = "tozero"), xaxis = list(title = 'Month'))
-  })
-  output$engagementsMethodsLinePlot <- renderPlotly({engagementsMethodsLinePlot <- plot_ly(x = months, y = as.double(tData[,59]), name = 'Avg. Days Between Jail and Re-enrollment', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = as.double(tData[,60]), name = 'Contact Attempts', mode = 'lines+markers') %>%
-    layout(yaxis = list(title = 'Number', rangemode = "tozero"), xaxis = list(title = 'Month'))
+  ### % Of Bed Days Filled
+  output$bedDaysLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = as.numeric(sub("%", "", reach$percent_percent_of_bed_days_in_recovery_residence_filled_this_month)) / 100, 
+    name = 'Percent Of Bed Days In Recovery Residence Filled',
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+      add_trace(y = as.numeric(sub("%", "", reach$percent_percent_of_bed_days_filled_by_transitional_residence_this_month)) / 100,
+                name = 'Percent Of Bed Days Filled By Transitional Residence',
+                mode = 'lines+markers'
+      ) %>%
+      add_trace(y = as.numeric(sub("%", "", reach$percent_percent_of_total_bed_days_filled_this_month)) / 100,
+                name = 'Percent Of Total Bed Days Filled',
+                mode = 'lines+markers'
+      ) %>%  
+      layout(yaxis = list(title = '% of Bed Days Filled', 
+                          rangemode = "tozero", 
+                          tickformat = "%"), 
+             xaxis = ax)
   })
   
-  #Staffing 
-  output$staffingLinePlot <- renderPlotly({staffingLinePlot <- plot_ly(x = months, y = strtoi(tData[,62]), name = 'Case Managers', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = strtoi(tData[,63]), name = 'Mentors', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,64]), name = 'Program Managers', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,65]), name = 'Admission Coordinators', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,66]), name = 'Therapists', mode = 'lines+markers') %>%
-    layout(yaxis = list(title = 'Number on Staff', rangemode = "tozero"), xaxis = list(title = 'Month'))
+
+# SUD treatment -----------------------------------------------------------
+  ##
+  ### Number Of UAs Conducted
+  output$UAsLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(),
+    y = reach$number_of_u_as_conducted_this_month,
+    name = 'UAs Conducted',
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+    layout(yaxis = list(title = 'Number Completed',
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
   
-  #Fidelity 
-  output$fidelityScoreLinePlot <- renderPlotly({fidelityScoreLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,67])), name = 'Staff Trained In Modalities', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,78])), name = 'MRT groups with Supervision', mode = 'lines+markers') %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,69])), name = 'Clinicians Receiving Fidelity Checks', mode = 'lines+markers') %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,70])), name = 'Fidelity Score for MRT', mode = 'lines+markers') %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,71])), name = 'Fidelity Score for MI', mode = 'lines+markers') %>%
-    add_trace(y = as.numeric(sub("%", "", tData[,72])), name = 'Fidelity Score for TA', mode = 'lines+markers') %>%
-    layout(yaxis = list(title = 'Percent (%)', rangemode = "tozero"), xaxis = list(title = 'Month'))
+
+  ### UA Percentage Breakdown
+  output$UAPercentLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(),
+    y = as.numeric(sub("%", "", reach$percent_positive_u_as_of_total_number_of_u_as_served_this_month)) / 100,
+    name = '% positive UAs (of total number of UAs served this month', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+    add_trace(y = as.numeric(sub("%", "", reach$percent_no_show_for_u_as_of_total_number_of_u_as_served_this_month)) / 100, 
+              name = '% no-show for UAs (of total number of UAs served this month', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    layout(yaxis = list(title = 'Percent (%)', 
+                        rangemode = "tozero",
+                        tickformat = "%"), 
+           xaxis = ax)
+  })
+  
+  
+  
+# Recidivism --------------------------------------------------------------  
+  ##
+  ### Re-engagements 
+  output$engagementsLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$number_of_incarcerated_individuals_that_re_engaged_post_release_this_month, 
+    name = 'Incarcerated Individuals That Re-Engaged Post-Release', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+    add_trace(y = reach$number_of_individuals_who_received_a_direct_contact_attempt, 
+              name = 'Individuals Who Received A Direct Contact Attempt', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$number_of_successful_reengagements_this_month, 
+              name = 'Successful Reengagements', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    layout(yaxis = list(title = 'Number Of Clients', 
+                        rangemode = "tozero"), 
+           xaxis = ax)
+  })
+  
+  ### Contact Attempts
+  output$engagementcontactattemptsLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$average_number_of_direct_contact_attempts_to_disengaged_individuals, 
+    name = 'Average Number Of Direct Contact Attempts To Disengaged Individuals',
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE) %>% 
+    layout(yaxis = list(title = 'Avg. # Of Direct Contact Attempts', 
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
 
-  #Exits 
-  output$exitLinePlot <- renderPlotly({exitLinePlot <- plot_ly(x = months, y = strtoi(tData[,73]), name = 'Total Unplanned Exits', type = 'scatter', mode = 'lines+markers')  %>%
-    add_trace(y = strtoi(tData[,74]), name = 'Jail', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,75]), name = 'Prison', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,76]), name = 'Self Termination', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,77]), name = 'No Contact', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,78]), name = 'Total Terminated by FSH', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,79]), name = 'Deceased', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,80]), name = 'Transfered Programs', mode = 'lines+markers') %>%
-    add_trace(y = strtoi(tData[,82]), name = 'Planned Exits', mode = 'lines+markers') %>%
-    layout(yaxis = list(title = 'Number of Clients that Exitted', rangemode = "tozero"), xaxis = list(title = 'Month'))
+
+# Staffing ----------------------------------------------------------------
+  ##
+  ### Staffing 
+  output$staffingLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$number_of_case_managers, 
+    name = 'Case Managers', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+    add_trace(y = reach$number_of_mentor_support, 
+              name = 'Mentors', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$number_of_program_managers, 
+              name = 'Program Managers', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$number_of_admissions_coordinator, 
+              name = 'Admission Coordinators', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$number_of_mental_health_therapists_clinicians, 
+              name = 'Therapists/Clinicians', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    layout(yaxis = list(title = 'Number on Staff', 
+                        rangemode = "tozero"), 
+           xaxis = ax)
   })
-  output$exitAttritionLinePlot <- renderPlotly({exitAttritionLinePlot <- plot_ly(x = months, y = as.numeric(sub("%", "", tData[,81])), name = 'Attrition', type = 'scatter', mode = 'lines+markers')  %>%
+  
+
+# Fidelity and Training ----------------------------------------------------------------
+  ##
+  ### Fidelity By Score
+  output$fidelityScoreLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$fidelity_score_for_mrt, 
+    name = 'Fidelity Score for MRT', 
+    type = "scatter",
+    mode = 'lines+markers',
+    connectgaps = TRUE) %>%
+      add_trace(y = reach$fidelity_score_for_mi, 
+                name = 'Fidelity Score for MI', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y = reach$fidelity_score_for_ta_therapeutic_alliance, 
+                name = 'Fidelity Score for TA (Therapeutic Alliance)', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      layout(yaxis = list(title = 'Score', 
+                          rangemode = "tozero"), 
+             xaxis = list(title = 'Month'))
+  })
+  
+  ### Fidelity By Percentages 
+  output$fidelitypercentageLinePlot <- renderPlotly({plot_ly(
+    x =timeunit(),
+    y = as.numeric(sub("%", "", reach$percent_percent_of_staff_trained_in_the_modalities_they_need)) / 100,
+    name = 'Staff Trained In The Modalities They Need', 
+    type = "scatter",
+    mode = 'lines+markers',
+    connectgaps = TRUE) %>%
+      add_trace(y = as.numeric(sub("%", "", reach$percent_percent_of_mrt_groups_receiving_supervision)) / 100, 
+                name = 'MRT Groups Recieving Supervision', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y = as.numeric(sub("%", "", reach$percent_percent_of_clinicians_receiving_fidelity_check)) / 100, 
+                name = 'Clinicians Recieving Fidelity Check', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      layout(yaxis = list(title = "Percent (%)",
+                          rangemode = "to zero",
+                          tickformat = "%"),
+             xaxis = ax)
+  })
+
+
+# Exits -------------------------------------------------------------------
+  ##
+  ### Number of Exits
+  output$exitLinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$disengagment_post_enrollment,
+    name = 'Total Unplanned Exits', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+    add_trace(y = reach$exits_to_jail,
+              name = 'To Jail', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$exits_to_prison, 
+              name = 'To Prison', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y =  reach$medical_leave,
+              name = 'Medical Leave', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y =  reach$drop_out,
+              name = 'Dropped Out', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$deceased,
+              name = 'Deceased', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y =  reach$transfer_to_another_program,
+              name = 'Transfered Programs', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    add_trace(y = reach$suspended_from_treatment,
+              name = 'Suspended From Treatment', 
+              mode = 'lines+markers',
+              connectgaps = TRUE) %>%
+    layout(yaxis = list(title = 'Number of Clients that Exitted', 
+                        rangemode = "tozero"), 
+           xaxis = list(title = 'Month'))
+  })
+  output$exitAttritionLinePlot <- renderPlotly({exitAttritionLinePlot <- plot_ly(x = timeunit(), y = as.numeric(sub("%", "", tData[,81])), name = 'Attrition', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Percent (%)', rangemode = "tozero"), xaxis = list(title = 'Month'))
   })
   
   #Finances
-  output$financesLinePlot <- renderPlotly({financesLinePlot <- plot_ly(x = months, y = as.double(tData[,83]), name = 'Finances', type = 'scatter', mode = 'lines+markers')  %>%
+  output$financesLinePlot <- renderPlotly({financesLinePlot <- plot_ly(x = timeunit(), y = as.double(tData[,83]), name = 'Finances', type = 'scatter', mode = 'lines+markers')  %>%
     layout(yaxis = list(title = 'Dollars ($)', rangemode = "tozero"), xaxis = list(title = 'Month', rangemode = "tozero"))
   })
 }

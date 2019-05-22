@@ -15,30 +15,34 @@ ui <- fluidPage(theme = shinytheme("paper"),
                 navbarPage("SLCo PFS: REACH Data Dashboard",
                            tabPanel("Dashboard",
                                     h3("Dashboard Overview"),
-                                    h4("Welcome to the SLCO-REACH DataVis Dashboard"),
+                                    h4("Welcome to the Salt Lake County PFS-REACH DataVis Dashboard"),
                       
-                                    p("This dashboard is designed to allow you to explore the data related to the SLCO-REACH project. Click 
+                                    p("This dashboard is designed to allow you to explore the data related to the SLCo-REACH project. Click 
                                       on the Category Bar at the top of the screen to see different categories of data. Once you've
                                       found a plot you like, you can use its interactive features to explore your data. Double click a series
-                                      on the legend to isolate the plot to that one data series!")
-                                    ),
-                                    
-                           tabPanel("Program Overview",
-                                    h3("Program Overview"),
+                                      on the legend to isolate the plot to that one data series!"),
+                                    p("You may also select the unit of time for which you'd like to view the data: months, quarters, or years."),
                                     selectInput(inputId = "timeunit", 
                                                 label = "Time Unit:",
                                                 c("Months" = "months",
                                                   "Quarters" = "quarters",
                                                   "Years" = "years")
-                                                ),
+                                    )
+                                    ),
+                                    
+                           tabPanel("Program Overview",
+                                    h3("Program Overview"),
                                     h4("Program Overview Percentages"),
                                     plotlyOutput("enrollmentpercentPlot"),
                                     h4("Program Overview Raw Counts"),
                                     plotlyOutput("programOverviewPlot"),
-                                    h3("Client Information"),
+                                    h4("Failures to Enroll"),
+                                    plotlyOutput("enrollmentfailureslinePlot"),
+                                    h4("Disengagements"),
+                                    plotlyOutput("disengagementslinePlot"),
+                                    h3("Client Demographics (of new enrollees)"),
                                     h4("Age"),
                                     plotlyOutput("agesLinePlot"),
-                                    h3("Race/Ethnicity"),
                                     h4("Race"),
                                     plotlyOutput("raceLinePlot"),
                                     h4("Ethnicity"),
@@ -47,12 +51,6 @@ ui <- fluidPage(theme = shinytheme("paper"),
                            
                            tabPanel("Referrals and Randomization",
                                     h3("Referrals and Randomization"),
-                                    selectInput(inputId = "timeunit", 
-                                                label = "Time Unit:",
-                                                c("Months" = "months",
-                                                  "Quarters" = "quarters",
-                                                  "Years" = "years")
-                                    ),
                                     h4("Randomized into REACH from Jail"),
                                     plotlyOutput("randomizedBarPlot"),
                                     h4("Average Number of Days Between Randomization and Enrollment"),
@@ -64,24 +62,12 @@ ui <- fluidPage(theme = shinytheme("paper"),
                                     ), 
                            tabPanel("Service Delivery",
                                     h3("Service Delivery"),
-                                    selectInput(inputId = "timeunit", 
-                                                label = "Time Unit:",
-                                                c("Months" = "months",
-                                                  "Quarters" = "quarters",
-                                                  "Years" = "years")
-                                    ),
                                     h4("Number of Clients by Delivery Type"),
                                     plotlyOutput("serviceDeliveryLinePlot")
                                   
                            ),
                            tabPanel("Employment",
                                    h3("Employment"),
-                                   selectInput(inputId = "timeunit", 
-                                               label = "Time Unit:",
-                                               c("Months" = "months",
-                                                 "Quarters" = "quarters",
-                                                 "Years" = "years")
-                                   ),
                                    h4("Percent of All REACH Clients Employed"),
                                    plotlyOutput("employmentBarPlot"),
                                    h4("Number of Clients Who Gained/Lost Employment"),
@@ -123,11 +109,6 @@ ui <- fluidPage(theme = shinytheme("paper"),
                                     plotlyOutput("fidelityScoreLinePlot"),
                                     h4("Training"),
                                     plotlyOutput("fidelitypercentageLinePlot")
-                           ),
-                           tabPanel("Exits",
-                                    h3("Exits"),
-                                    h4("Number of Exits"),
-                                    plotlyOutput("exitLinePlot")
                            ),
                            tabPanel("Financial",
                                     h3("Financial Data"),
@@ -253,9 +234,9 @@ timeunit <- reactive({
 })
 
 
-# Program Overview --------------------------------------------------------
-### Program Overview
-#### Program Overview Percentages
+ # Program Overview --------------------------------------------------------
+## Program Overview
+### Program Overview Percentages
 output$enrollmentpercentPlot <- renderPlotly({plot_ly(
   x = timeunit(), 
   y = as.numeric(sub("%", "", reach$enrollment_percent)) / 100, 
@@ -281,7 +262,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
 
   
   
-#### Program Overview Raw Counts 
+### Program Overview Raw Counts 
   output$programOverviewPlot <- renderPlotly({plot_ly(
     #Plot Number of individuals RANDOMIZED in REACH
     x = timeunit(), 
@@ -319,8 +300,98 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
            xaxis = ax)
   })
   
-### New Enrollee Client Information
-#### Age  
+### Failures to Enroll
+  output$enrollmentfailureslinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$failure_to_enroll_after_30_days, 
+    name = 'Enrollment Failures-All Types', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE) %>% 
+      add_trace(y = reach$fugitive,
+                name = "Fugitive",
+                type = "scatter",
+                mode = "lines+markers",
+                connectgaps = TRUE) %>% 
+      add_trace(y = reach$jail_continued_stay,
+                name = "Jail-Continued Stay",
+                type = "scatter",
+                mode = "lines+markers",
+                connectgaps = TRUE) %>% 
+      add_trace(y = reach$jail_new_stay,
+                name = "Jail-New Stay",
+                type = "scatter",
+                mode = "lines+markers",
+                connectgaps = TRUE) %>% 
+      add_trace(y = reach$other_county,
+                name = "Other County",
+                type = "scatter",
+                mode = "lines+markers",
+                connectgaps = TRUE) %>% 
+      add_trace(y = reach$other_treatment_continued_stay,
+                name = "Other Treatment-Continued Stay",
+                type = "scatter",
+                mode = "lines+markers",
+                connectgaps = TRUE) %>% 
+      add_trace(y = reach$other_treatment_new_or_none,
+                name = "Other Treatment-New or None",
+                type = "scatter",
+                mode = "lines+markers",
+                connectgaps = TRUE) %>% 
+      add_trace(y = reach$prison,
+                name = "Prison",
+                type = "scatter",
+                mode = "lines+markers",
+                connectgaps = TRUE) %>% 
+      layout(yaxis = list(title = 'Percent', 
+                          rangemode = "tozero"),
+             xaxis = ax)
+  })
+  
+### Disengagements
+  output$disengagementslinePlot <- renderPlotly({plot_ly(
+    x = timeunit(), 
+    y = reach$disengagment_post_enrollment,
+    name = 'Disengagements-All Types', 
+    type = 'scatter', 
+    mode = 'lines+markers',
+    connectgaps = TRUE)  %>%
+      add_trace(y = reach$exits_to_jail,
+                name = 'To Jail', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y = reach$exits_to_prison, 
+                name = 'To Prison', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y =  reach$medical_leave,
+                name = 'Medical Leave', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y =  reach$drop_out,
+                name = 'Dropped Out', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y = reach$deceased,
+                name = 'Deceased', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y =  reach$transfer_to_another_program,
+                name = 'Transfered Programs', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      add_trace(y = reach$suspended_from_treatment,
+                name = 'Suspended From Treatment', 
+                mode = 'lines+markers',
+                connectgaps = TRUE) %>%
+      layout(yaxis = list(title = 'Number of Clients that Exitted', 
+                          rangemode = "tozero"), 
+             xaxis = list(title = 'Month'))
+  })
+  
+  
+## New Enrollee Client Information
+### Age  
   output$agesLinePlot <- renderPlotly({plot_ly(
     x = timeunit(),
     # 18-25
@@ -348,7 +419,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
            xaxis = list(title = ax))
   })
   
-#### Race
+### Race
   output$raceLinePlot <- renderPlotly({plot_ly(
     x = timeunit(),
     # American Indian
@@ -397,7 +468,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
              xaxis = ax)
   })
     
-#### Ethnicity
+### Ethnicity
   output$ethnicitylinePlot <- renderPlotly({plot_ly(
     x = timeunit(),
     # Mexican 
@@ -431,7 +502,8 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
   })
  
 # Referrals and Randomization ---------------------------------------------  
-## Referrals and Randomization 
+
+  ## Referrals and Randomization 
 ### Randomized into Reach from Jail  
   output$randomizedBarPlot <- renderPlotly({plot_ly(
     x = timeunit(), 
@@ -533,7 +605,7 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
 # Employment --------------------------------------------------------------
 ### Percent Employed
   output$employmentBarPlot <- renderPlotly({plot_ly(
-    x = months, 
+    x = timeunit(), 
     y = reach$percent_percent_of_all_reach_clients_employed,
     type = 'bar', 
     name = 'REACH Clients') %>%
@@ -789,56 +861,13 @@ output$enrollmentpercentPlot <- renderPlotly({plot_ly(
              xaxis = ax)
   })
 
+# Financial ---------------------------------------------------------------
 
-# Exits -------------------------------------------------------------------
-  ##
-  ### Number of Exits
-  output$exitLinePlot <- renderPlotly({plot_ly(
-    x = timeunit(), 
-    y = reach$disengagment_post_enrollment,
-    name = 'Total Unplanned Exits', 
-    type = 'scatter', 
-    mode = 'lines+markers',
-    connectgaps = TRUE)  %>%
-    add_trace(y = reach$exits_to_jail,
-              name = 'To Jail', 
-              mode = 'lines+markers',
-              connectgaps = TRUE) %>%
-    add_trace(y = reach$exits_to_prison, 
-              name = 'To Prison', 
-              mode = 'lines+markers',
-              connectgaps = TRUE) %>%
-    add_trace(y =  reach$medical_leave,
-              name = 'Medical Leave', 
-              mode = 'lines+markers',
-              connectgaps = TRUE) %>%
-    add_trace(y =  reach$drop_out,
-              name = 'Dropped Out', 
-              mode = 'lines+markers',
-              connectgaps = TRUE) %>%
-    add_trace(y = reach$deceased,
-              name = 'Deceased', 
-              mode = 'lines+markers',
-              connectgaps = TRUE) %>%
-    add_trace(y =  reach$transfer_to_another_program,
-              name = 'Transfered Programs', 
-              mode = 'lines+markers',
-              connectgaps = TRUE) %>%
-    add_trace(y = reach$suspended_from_treatment,
-              name = 'Suspended From Treatment', 
-              mode = 'lines+markers',
-              connectgaps = TRUE) %>%
-    layout(yaxis = list(title = 'Number of Clients that Exitted', 
-                        rangemode = "tozero"), 
-           xaxis = list(title = 'Month'))
-  })
-
+#   output$financesLinePlot <- renderPlotly({financesLinePlot <- plot_ly(x = timeunit(), y = as.double(tData[,83]), name = 'Finances', type = 'scatter', mode = 'lines+markers')  %>%
+#     layout(yaxis = list(title = 'Dollars ($)', rangemode = "tozero"), xaxis = list(title = 'Month', rangemode = "tozero"))
+#   })
   
-  #Finances
-  output$financesLinePlot <- renderPlotly({financesLinePlot <- plot_ly(x = timeunit(), y = as.double(tData[,83]), name = 'Finances', type = 'scatter', mode = 'lines+markers')  %>%
-    layout(yaxis = list(title = 'Dollars ($)', rangemode = "tozero"), xaxis = list(title = 'Month', rangemode = "tozero"))
-  })
-}
+  }
 
 # Run the application 
 shinyApp(ui = ui, server = server)

@@ -6,15 +6,21 @@ library(shinythemes)
 library(tidyverse)
 
 
-# Define UI
-ui <- fluidPage(theme = shinytheme("superhero"),
-                navbarPage("SLC HNJ Dashboard",
+# Define UI--------------------------------------------------------
+ui <- fluidPage(theme = shinytheme("paper"),
+                navbarPage("SLCo HNJ Data Dashboard",
                            tabPanel("Dashboard",
                                     h3("Dashboard Overview"),
                                       p("Welome to the HNJ Dashboard. This dashboard is designed to allow you to explore the data related to the SLCO-HNJ project. Click 
                                       on the Category Bar at the top of the screen to see different categories of data. Once you've
                                       found a plot you like, you can use its interactive features to explore your data. Double click a series
-                                      on the legend to isolate the plot to that one data series.")
+                                      on the legend to isolate the plot to that one data series."),
+                                      p("You may also select the unit of time for which you'd like to view the data: months, quarters, or years."),
+                                      selectInput(inputId = "timeunit", 
+                                                  label = "Time Unit:",
+                                                  c("Months" = "months",
+                                                    "Quarters" = "quarters",
+                                                    "Years" = "years"))
                            ),       
                            tabPanel("Program Overview",
                                     h3("Program Overview"),
@@ -80,7 +86,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
 
                 HTML('<center><img src="footer.jpg"></center>')
 )
-# Define Server
+# Define Server --------------------------------------------------------
 server <- function(input, output) {
   ax <- list(
     title = 'Month',
@@ -93,36 +99,40 @@ server <- function(input, output) {
   ## Import Data
   gap <- gs_title("HNJ Service Provider Report_Updated")
   myData <- gap %>%
-    gs_read()
+    gs_read(ws = "Updated Service Report")
 
-  ## Wrangling
+  ## Wrangling --------------------------------------------------------
+  ### NOTE:
+    # As long as the googlesheets format stays the same, the numeric header removal code should work without alteration. 
+    # I spent most of my time attempting to find a solution of using character column names rather than numerical.
+    # This is the learning curve I mentioned. Overall the dashboard works well with the updated googlesheet.
   tData <- t(myData) # transposes the data
   tData <- as.data.frame(tData) # transforms the data into a dataframe
   tData <- tData[ ,-c(1, 6, 7, 11, 16, 25, 29, 56, 63, 69, 77, 81, 84, 96)] # removes header columns
   colnames(tData) <- as.character(unlist(tData[2,])) # assigns column names to second row
   tData <- tData[-c(1, 2, 5, 9, 13, 16, 17, 18, 19, 20, 21, 22), ] # removes quarterly total and duplicate rows
   xaxis <- rownames(tData) # assigns row names to a vector we can use in our graph
-  months <- factor(xaxis,levels = c("October", "November", "December", "January",  "February", "March",  "April", "May", "June",  "July", "August"))
+  months <- factor(xaxis,levels = c("October", "November", "December", "January",  "February", "March",  "April", "May", "June",  "July", "August","September"))
     ### Creating new Columns for Staffing Tab
-    staff <- c(NA, 7, 7, 7, 7, 7, 7, 7, 7, 7)
-    tData$Staff <- staff
-    clients <- c(NA, 61, 67, 67, 67, 95, 103, 113, 127, NA)
-    tData$Clients <- clients
-    PositionsAvailable <- c(NA, 0, 0, 0, 0, 0, 0, 0, 0, 1)
-    tData$PositionsAvailable <- PositionsAvailable
-    PositionsFilled <- c(NA, 7, 7, 7, 7, 7, 7, 7, 7, 8)
-    tData$PositionsFilled <- PositionsFilled
+    # staff <- c(NA, 7, 7, 7, 7, 7, 7, 7, 7, 7)
+    # tData$Staff <- staff
+    # clients <- c(NA, 61, 67, 67, 67, 95, 103, 113, 127, NA)
+    # tData$Clients <- clients
+    # PositionsAvailable <- c(NA, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+    # tData$PositionsAvailable <- PositionsAvailable
+    # PositionsFilled <- c(NA, 7, 7, 7, 7, 7, 7, 7, 7, 8)
+    # tData$PositionsFilled <- PositionsFilled
     
-  ## Graphics
+ ## Graphics --------------------------------------------------------
     ### Program Overview
       #### Program Overview
-      output$POplot <- renderPlotly({POplot <- plot_ly(x = months, y = strtoi(tData[ ,1]), name = 'New Clients', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(tData[ ,2]), name = 'Total Clients', mode = 'lines+markers') %>%
+      output$POplot <- renderPlotly({POplot <- plot_ly(x = months, y = strtoi(tData[ ,2]), name = 'Total Clients', type = 'scatter', mode = 'lines+markers')  %>%
+        add_trace(y = strtoi(tData[ ,1]), name = 'New Clients', mode = 'lines+markers') %>%
         add_trace(y = strtoi(tData[ ,3]), name = 'Clients Housed', mode = 'lines+markers') %>%
         add_trace(y = strtoi(tData[ ,4]), name = 'Clients Permanently Housed', mode = 'lines+markers') %>%
       layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = ax)
       })
-    ### Client Demographics
+    ### Client Demographics --------------------------------------------------------
       #### Gender
       output$GenderPlot <- renderPlotly({GenderPlot <- plot_ly(x = months, y = strtoi(tData[ ,5]), name = 'Male', type = 'scatter', mode = 'lines+markers')  %>%
         add_trace(y = strtoi(tData[ ,6]), name = 'Female', mode = 'lines+markers')%>%
@@ -145,7 +155,7 @@ server <- function(input, output) {
         add_trace(y = strtoi(tData[,21]), name = 'Other: Non-Hispanic', mode = 'lines+markers')%>%
       layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
       })
-    ### Referrals and Enrollment 
+    ### Referrals and Enrollment--------------------------------------------------------
       #### Eligible per HMIS Data Pull
       output$HMISplot <- renderPlotly({HMISplot <- plot_ly(x = months, y = strtoi(tData[,23]), type = 'bar', name = 'Eligible per HMIS Data Pull') %>%
       layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
@@ -160,7 +170,7 @@ server <- function(input, output) {
         add_trace(y = strtoi(tData[ ,34]), name = 'Ineligible after Prescreen', mode = 'lines+markers') %>%
       layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
       })
-    ### Housing Placement and Services
+    ### Housing Placement and Services --------------------------------------------------------
       #### Roommate Placement Assessments Conducted
       output$RPACplot <- renderPlotly({RPACplot <- plot_ly(x = months, y = strtoi(tData[,49]), type = 'bar', name = 'Roommate Placement Assessments Conducted')  %>%
       layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
@@ -176,7 +186,7 @@ server <- function(input, output) {
         add_trace(y = strtoi(tData[ ,54]), name = 'Not Housed within Three Months of Enrollment', mode = 'lines+markers') %>%
       layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
       })
-    ### Behavioral Health
+    ### Behavioral Health --------------------------------------------------------
       #### Referrals
       output$ReferralsPlot <- renderPlotly({ReferralsPlot <- plot_ly(x = months, y = strtoi(tData[,60]), name = 'Referred to BH Treatment', type = 'scatter', mode = 'lines+markers')  %>%
         add_trace(y = strtoi(tData[,62]), name = 'Referred to BH Treatment after HNJ Assessment ', mode = 'lines+markers') %>%

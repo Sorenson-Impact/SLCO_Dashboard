@@ -208,7 +208,7 @@ server <- function(input, output) {
     # hnj$PositionsFilled <- PositionsFilled
     
  ## Graphics --------------------------------------------------------
-    ### Program Overview
+    ### Program Overview ----
       #### Program Overview
   output$POplot <- renderPlotly({POplot <- plot_ly(
     x = timeunit(), 
@@ -231,118 +231,406 @@ server <- function(input, output) {
               connectgaps = TRUE) %>%
     layout(yaxis = list(title = 'Number of Individuals', 
                         rangemode = "tozero"), 
-           xaxis = ax)
+                        xaxis = ax)
   })
     ### Client Demographics --------------------------------------------------------
       #### Gender
-      output$GenderPlot <- renderPlotly({GenderPlot <- plot_ly(x = months, y = hnj[ ,5], name = 'Male', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = hnj[ ,6], name = 'Female', mode = 'lines+markers')%>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
+      output$GenderPlot <- renderPlotly({GenderPlot <- plot_ly(
+                                         x = timeunit(), 
+                                         y = hnj$male, 
+                                         name = 'Male', 
+                                         type = 'scatter', 
+                                         mode = 'lines+markers', 
+                                         connectgaps = TRUE
+                                         )%>%
+                                         add_trace(y = hnj$female,
+                                                   name = 'Female', 
+                                                   mode = 'lines+markers', 
+                                                   connectgaps = TRUE
+                                         )%>%
+                                         layout(yaxis = list(title = 'Number of Individuals', 
+                                                             rangemode = "tozero"), 
+                                                             xaxis = ax)
       })
       #### Age 
-      output$AgesLinePlot <- renderPlotly({AgesLinePlot <- plot_ly(x = months, y = hnj[ ,9], name = '26-35', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = hnj[ ,10], name = '36-45', mode = 'lines+markers')%>%
-        add_trace(y = hnj[ ,11], name = '45+', mode = 'lines+markers')%>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$AgesLinePlot <- renderPlotly({AgesLinePlot <- plot_ly(
+                                           x = timeunit(), 
+                                           y = hnj$x18_25, 
+                                           name = '18-25', 
+                                           type = 'scatter', 
+                                           mode = 'lines+markers', 
+                                           connectgaps = TRUE
+                                           )%>%
+                                           add_trace(y = hnj$x26_35,
+                                                     name = '26-35', 
+                                                     mode = 'lines+markers', 
+                                                     connectgaps = TRUE
+                                           )%>%
+                                           add_trace(y = hnj$x36_45,
+                                                     name = '36-45',
+                                                     mode = 'lines+markers',
+                                                     connectgaps = TRUE
+                                           )%>%
+                                           add_trace(y = hnj$x45,
+                                                     name = '45+',
+                                                     mode = 'lines+markers',
+                                                     connectgaps = TRUE
+                                           )%>%
+                                           layout(yaxis = list(title = 'Number of Individuals',
+                                                               rangemode = "tozero"),
+                                                               xaxis = ax)
+                                           })
       #### Race
-      output$RaceLinePlot <- renderPlotly({ RaceLinePlot <- plot_ly(x = months, y = hnj[ ,12], name = 'American Indian', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,13]), name = 'Asian', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,14]), name = 'Pacific Islander', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,15]), name = 'Black/African American', mode = 'lines+markers')%>%
-        add_trace(y = strtoi(hnj[,16]), name = 'White', mode = 'lines+markers')%>%
-        add_trace(y = strtoi(hnj[,17]), name = 'Other: Two or more races', mode = 'lines+markers')%>%
-        add_trace(y = strtoi(hnj[,20]), name = 'Hispanic', mode = 'lines+markers')%>%
-        add_trace(y = strtoi(hnj[,21]), name = 'Other: Non-Hispanic', mode = 'lines+markers')%>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$RaceLinePlot <- renderPlotly({ RaceLinePlot <- plot_ly(
+                                            x = timeunit(),
+                                            y = hnj$alaska_native_american_indian,
+                                            name = 'American Indian',
+                                            type = 'scatter',
+                                            mode = 'lines+markers',
+                                            connectgaps = TRUE
+                                            )%>%
+                                            add_trace(y = hnj$asian,
+                                                      name = 'Asian',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            add_trace(y = hnj$native_hawaiian_or_other_pacific_islander,
+                                                      name = 'Pacific Islander',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            add_trace(y = hnj$black_african_american,
+                                                      name = 'Black/African American',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            add_trace(y = hnj$white,
+                                                      name = 'White',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            add_trace(y = hnj$two_or_more_races,
+                                                      name = 'Other: Two or more races',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            add_trace(y = hnj$hispanic_latino,
+                                                      name = 'Hispanic',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            add_trace(y = hnj$non_hispanic_latino,
+                                                      name = 'Other: Non-Hispanic',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            layout(yaxis = list(title = 'Number of Individuals',
+                                                                rangemode = "tozero"),
+                                                                xaxis = ax)
+                                            })
     ### Referrals and Enrollment--------------------------------------------------------
       #### Eligible per HMIS Data Pull
-      output$HMISplot <- renderPlotly({HMISplot <- plot_ly(x = months, y = strtoi(hnj[,23]), type = 'bar', name = 'Eligible per HMIS Data Pull') %>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$HMISplot <- renderPlotly({HMISplot <- plot_ly(
+                                       x = timeunit(),
+                                       y = hnj$number_of_individuals_identified_as_eligible_per_hmis_data_pull_this_quarter,
+                                       type = 'bar',
+                                       name = 'Eligible per HMIS Data Pull',
+                                       connectgaps = TRUE
+                                       )%>%
+                                       layout(yaxis = list(title = 'Number of Individuals',
+                                                           rangemode = "tozero"),
+                                                           xaxis = ax)
+                                       })
       #### TRH Location Endeavors
-      output$TRHplot <- renderPlotly({TRHplot <- plot_ly(x = months, y = strtoi(hnj[ ,24]), name = 'Attempted to Locate', type = 'scatter', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[ ,25]), name = 'Located and Prescreened', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
-      })
+      output$TRHplot <- renderPlotly({TRHplot <- plot_ly(
+                                      x = timeunit(),
+                                      y = hnj$number_of_individuals_trh_attempted_to_located_this_month,
+                                      name = 'Attempted to Locate',
+                                      type = 'scatter',
+                                      mode = 'lines+markers',
+                                      connectgaps = TRUE
+                                      )%>%
+                                      add_trace(y = hnj$number_of_individuals_prescreened_this_month,
+                                                name = 'Located and Prescreened',
+                                                mode = 'lines+markers',
+                                                connectgaps = TRUE
+                                      )%>%
+                                      add_trace(y = hnj$number_of_individuals_eligible_for_prescreen_this_month,
+                                                name = 'Eligible for Prescreen',
+                                                mode = 'lines+markers',
+                                                connectgaps = TRUE
+                                      )%>%
+                                      layout(yaxis = list(title = 'Number of Individuals',
+                                                          rangemode = "tozero"),
+                                                          xaxis = ax)
+                                      })
       #### Prescreen Eligibility
-      output$PrescreenPlot <- renderPlotly({PrescreenPlot <- plot_ly(x = months, y = strtoi(hnj[ ,33]), name = 'Eligible after Prescreen', type = 'scatter', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[ ,34]), name = 'Ineligible after Prescreen', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
-      })
+      output$PrescreenPlot <- renderPlotly({PrescreenPlot <- plot_ly(
+                                            x = timeunit(),
+                                            y = hnj$number_of_individuals_identified_as_eligible_after_prescreen_this_month,
+                                            name = 'Eligible after Prescreen',
+                                            type = 'scatter',
+                                            mode = 'lines+markers',
+                                            connectgaps = TRUE
+                                            )%>%
+                                            add_trace(y = hnj$number_of_individuals_identified_as_ineligible_after_prescreen_this_month_and_reason,
+                                                      name = 'Ineligible after Prescreen',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            layout(yaxis = list(title = 'Number of Individuals',
+                                                   rangemode = "tozero"),
+                                                   xaxis = ax)
+                                            })
     ### Housing Placement and Services --------------------------------------------------------
-      #### Roommate Placement Assessments Conducted
-      output$RPACplot <- renderPlotly({RPACplot <- plot_ly(x = months, y = strtoi(hnj[,49]), type = 'bar', name = 'Roommate Placement Assessments Conducted')  %>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
-      #### New Placements into Housing
-      output$NPiHplot <- renderPlotly({NPiHplot <- plot_ly(x = months, y = strtoi(hnj[ ,50]), name = 'Total', type = 'scatter', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[ ,51]), name = 'Single Occupancy Housing', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[ ,52]), name = 'Roommate Housing', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
-      })
+      # Roommate Placement Assessments Conducted 
+      output$RPACplot <- renderPlotly({RPACplot <- plot_ly(
+                                       x = timeunit(),
+                                       y = hnj$number_of_roommate_placement_assessments_conducted_this_month,
+                                       type = 'bar',
+                                       name = 'Roommate Placement Assessments Conducted'
+                                       )%>%
+                                       layout(yaxis = list(title = 'Number of Individuals',
+                                                           rangemode = "tozero"),
+                                                           xaxis = ax)
+                                       })
+      #### New Placements into Housing 
+      output$NPiHplot <- renderPlotly({NPiHplot <- plot_ly(
+                                       x = timeunit(),
+                                       y = hnj$total_number_of_housed_clients_to_date,
+                                       name = 'Total',
+                                       type = 'scatter',
+                                       mode = 'lines+markers',
+                                       connectgaps = TRUE
+                                       )%>%
+                                       add_trace(y = hnj$number_of_new_single_occupancy_housing_placements,
+                                                 name = 'Single Occupancy Housing',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                                 add_trace(y = hnj$number_of_new_roommate_housing_placements,
+                                                 name = 'Roommate Housing',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       layout(yaxis = list(title = 'Number of Individuals',
+                                                           rangemode = "tozero"),
+                                                           xaxis = ax)
+                                       })
       #### Awaiting Housing
-      output$AHplot <- renderPlotly({AHplot <- plot_ly(x = months, y = strtoi(hnj[ ,53]), name = 'Awaiting Housing Placement', type = 'scatter', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[ ,54]), name = 'Not Housed within Three Months of Enrollment', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals'), xaxis = list(title = 'Month'))
-      })
+      output$AHplot <- renderPlotly({AHplot <- plot_ly(
+                                     x = timeunit(),
+                                     y = hnj$total_number_of_clients_currently_awaiting_housing_placement,
+                                     name = 'Awaiting Housing Placement',
+                                     type = 'scatter',
+                                     mode = 'lines+markers',
+                                     connectgaps = TRUE
+                                     )%>%
+                                     add_trace(y = hnj$number_of_clients_this_month_not_housed_within_3_months_of_enrollment,
+                                               name = 'Not Housed within Three Months of Enrollment',
+                                               mode = 'lines+markers',
+                                               connectgaps = TRUE
+                                               )%>%
+                                     layout(yaxis = list(title = 'Number of Individuals',
+                                            rangemode = "tozero"),
+                                            xaxis = ax)
+                                     })
     ### Behavioral Health --------------------------------------------------------
       #### Referrals
-      output$ReferralsPlot <- renderPlotly({ReferralsPlot <- plot_ly(x = months, y = strtoi(hnj[,60]), name = 'Referred to BH Treatment', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,62]), name = 'Referred to BH Treatment after HNJ Assessment ', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$ReferralsPlot <- renderPlotly({ReferralsPlot <- plot_ly(
+                                            x = timeunit(),
+                                            y = hnj$number_of_clients_referred_to_behavioral_health_treatment,
+                                            name = 'Referred to BH Treatment',
+                                            type = 'scatter',
+                                            mode = 'lines+markers',
+                                            connectgaps = TRUE
+                                            )%>%
+                                            add_trace(y = hnj$number_of_clients_referred_to_behavioral_health_treatment_after_assessment_by_hnj_clinician,
+                                                      name = 'Referred to BH Treatment after HNJ Assessment',
+                                                      mode = 'lines+markers',
+                                                      connectgaps = TRUE
+                                                      )%>%
+                                            layout(yaxis = list(title = 'Number of Individuals',
+                                                                rangemode = "tozero"),
+                                                                xaxis = ax)
+                                            })
       #### HNJ Clinician Statistics
-      output$CSplot <- renderPlotly({CSplot <- plot_ly(x = months, y = strtoi(hnj[,61]), name = 'HNJ Health Assessments Conducted', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,63]), name = 'Met with HNJ Clinician', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$CSplot <- renderPlotly({CSplot <- plot_ly(
+                                     x = timeunit(),
+                                     y = hnj$number_of_behavioral_health_assessments_intakes_conducted_by_hnj_clinician, 
+                                     name = 'HNJ Health Assessments Conducted',
+                                     type = 'scatter', mode = 'lines+markers',
+                                     connectgaps = TRUE
+                                     )%>%
+                                     add_trace(y = hnj$number_of_individuals_who_met_with_hnj_clinician,
+                                               name = 'Met with HNJ Clinician',
+                                               mode = 'lines+markers',
+                                               connectgaps = TRUE
+                                               )%>%
+                                     layout(yaxis = list(title = 'Number of Individuals',
+                                                         rangemode = "tozero"),
+                                                         xaxis = ax)
+                                     })
       #### Enrolled in Additional Community Services
-      output$EiACSplot <- renderPlotly({EiACSplot <- plot_ly(x = months, y = strtoi(hnj[,64]), name = 'Total', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,65]), name = 'SUD', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,66]), name = 'Behavioral', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$EiACSplot <- renderPlotly({EiACSplot <- plot_ly(
+                                        x = timeunit(),
+                                        y = hnj$number_of_individuals_referred_to_treatment,
+                                        name = 'Total',
+                                        type = 'scatter',
+                                        mode = 'lines+markers',
+                                        connectgaps = TRUE
+                                        )%>%
+                                        add_trace(y = hnj$sud,
+                                                  name = 'SUD',
+                                                  mode = 'lines+markers',
+                                                  connectgaps = TRUE
+                                                  )%>%
+                                        add_trace(y = hnj$behavioral,
+                                                  name = 'Behavioral',
+                                                  mode = 'lines+markers',
+                                                  connectgaps = TRUE
+                                                  )%>%
+                                      layout(yaxis = list(title = 'Number of Individuals',
+                                                          rangemode = "tozero"),
+                                                          xaxis = ax)
+                                      })
     ### Employment
       #### Employment  
-      output$EmploymentPlot <- renderPlotly({EmploymentPlot <- plot_ly(x = months, y = strtoi(hnj[,67]), name = 'Employment Assessments Conducted', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,68]), name = 'Enrolled in Employment Services', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,69]), name = 'Participants with Source of Income', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Clients', rangemode = "tozero"), xaxis = list(title = 'Month', ax))
-      })
+      output$EmploymentPlot <- renderPlotly({EmploymentPlot <- plot_ly(
+                                             x = months,
+                                             y = hnj$number_of_employment_placements_this_month,
+                                             name = 'Employment Assessments Conducted',
+                                             type = 'scatter', mode = 'lines+markers',
+                                             connectgaps = TRUE
+                                             )%>%
+                                             add_trace(y = hnj$total_number_of_hnj_participants_enrolled_in_employment_services_this_month,
+                                                       name = 'Enrolled in Employment Services',
+                                                       mode = 'lines+markers',
+                                                       connectgaps = TRUE
+                                                       )%>%
+                                             add_trace(y = hnj$number_of_hnj_participants_with_a_source_of_income_this_month,
+                                                       name = 'Participants with Source of Income',
+                                                       mode = 'lines+markers',
+                                                       connectgaps = TRUE
+                                                       )%>%
+                                             layout(yaxis = list(title = 'Number of Clients',
+                                                                 rangemode = "tozero"),
+                                                                 xaxis = ax)
+                                             })
     ### Staffing
       #### Staff to Client Ratio
-      output$StCRplot <- renderPlotly({StCRplot <- plot_ly(x = months, y = strtoi(hnj[,84]), name = 'Staff', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,85]), name = 'Clients', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month', ax))
-      })
+     output$StCRplot <- renderPlotly({StCRplot <- plot_ly(
+                                       x = timeunit(),
+                                       y = hnj$,
+                                       name = 'Staff',
+                                       type = 'scatter',
+                                       mode = 'lines+markers',
+                                       connectgaps = TRUE
+                                       )%>%
+                                       add_trace(y = hnj$,
+                                                 name = 'Clients',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       layout(yaxis = list(title = 'Number of Individuals',
+                                                           rangemode = "tozero"),
+                                                           xaxis = ax)
+                                       })
       #### Staffing Positions
-      output$SPplot <- renderPlotly({SPplot <- plot_ly(x = months, y = strtoi(hnj[,86]), name = 'Positions Available', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,87]), name = 'Positions Filled', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month', ax))
-      })
+      output$SPplot <- renderPlotly({SPplot <- plot_ly(
+                                     x = timeunit(), 
+                                     y = hnj$,
+                                     name = 'Positions Available',
+                                     type = 'scatter',
+                                     mode = 'lines+markers',
+                                     connectgaps = TRUE
+                                     )%>%
+                                     add_trace(y = hnj$,
+                                               name = 'Positions Filled',
+                                               mode = 'lines+markers',
+                                               connectgaps = TRUE
+                                               )%>%
+                                     layout(yaxis = list(title = 'Number of Individuals',
+                                                         rangemode = "tozero"),
+                                                         xaxis = ax)
+                                     })
     ### Exits
       #### Clients that Lost Housing this Month
-      output$CtLHplot <- renderPlotly({CtLHplot <- plot_ly(x = months, y = strtoi(hnj[,72]), name = 'Total', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,73]), name = 'Eviction', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,74]), name = 'Other', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Clients that Exitted', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$CtLHplot <- renderPlotly({CtLHplot <- plot_ly(
+                                       x = timeunit(),
+                                       y = hnj$number_of_clients_that_lost_housing_this_month_and_reason, 
+                                       name = 'Total',
+                                       type = 'scatter',
+                                       mode = 'lines+markers',
+                                       connectgaps = TRUE
+                                       )%>%
+                                       add_trace(y = hnj$eviction,
+                                                 name = 'Eviction',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       add_trace(y = hnj$other,
+                                                 name = 'Other',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       layout(yaxis = list(title = 'Number of Clients that Exitted',
+                                                           rangemode = "tozero"),
+                                                           xaxis = ax)
+                                       })
       #### Unplanned Exits this Month
-      output$UEtMplot <- renderPlotly({UEtMplot <- plot_ly(x = months, y = strtoi(hnj[75]), name = 'Total Unplanned Exits', type = 'scatter', mode = 'lines+markers')  %>%
-        add_trace(y = strtoi(hnj[,76]), name = 'Jail/Prison', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,77]), name = 'Self-Termination', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,78]), name = 'Left without Contact', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,79]), name = 'Deceased', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,80]), name = 'Transfer to Another Program', mode = 'lines+markers') %>%
-        add_trace(y = strtoi(hnj[,81]), name = 'Other', mode = 'lines+markers') %>%
-      layout(yaxis = list(title = 'Number of Clients that Exitted', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$UEtMplot <- renderPlotly({UEtMplot <- plot_ly(
+                                       x = timeunit(),
+                                       y = hnj$number_of_unplanned_exits_this_month_and_reason,
+                                       name = 'Total Unplanned Exits',
+                                       type = 'scatter',
+                                       mode = 'lines+markers',
+                                       connectgaps = TRUE
+                                       )%>%
+                                       add_trace(y = hnj$exits_to_jail_prison,
+                                                 name = 'Jail/Prison',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       add_trace(y = hnj$self_termination,
+                                                 name = 'Self-Termination',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       add_trace(y = hnj$left_without_contact,
+                                                 name = 'Left without Contact',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       add_trace(y = hnj$deceased,
+                                                 name = 'Deceased',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       add_trace(y = hnj$transfer_to_another_program,
+                                                 name = 'Transfer to Another Program',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       add_trace(y = hnj$other_include_note_if_necessary,
+                                                 name = 'Other',
+                                                 mode = 'lines+markers',
+                                                 connectgaps = TRUE
+                                                 )%>%
+                                       layout(yaxis = list(title = 'Number of Clients that Exitted',
+                                                           rangemode = "tozero"),
+                                                           xaxis = ax)
+                                       })
       #### Planned Graduations
-      output$PGplot <- renderPlotly({PGplot <- plot_ly(x = months, y = strtoi(hnj[,82]), type = 'bar', name = 'Planned Graduations') %>%
-        layout(yaxis = list(title = 'Number of Individuals', rangemode = "tozero"), xaxis = list(title = 'Month'))
-      })
+      output$PGplot <- renderPlotly({PGplot <- plot_ly(
+                                     x = months,
+                                     y = hnj$number_of_graduations_from_the_program_this_month_planned_exit,
+                                     type = 'bar',
+                                     name = 'Planned Graduations')%>%
+                                     layout(yaxis = list(title = 'Number of Individuals',
+                                                         rangemode = "tozero"),
+                                                         xaxis = ax)
+                                     })
 }
 # Run App
 shinyApp(ui, server)

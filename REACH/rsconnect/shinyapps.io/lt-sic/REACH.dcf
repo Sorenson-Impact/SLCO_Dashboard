@@ -1,0 +1,13 @@
+name: REACH
+title: REACH
+username:
+account: lt-sic
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 942097
+bundleId: 2180345
+url: https://lt-sic.shinyapps.io/REACH/
+when: 1561568579.29437
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: REACH_wrangling.R

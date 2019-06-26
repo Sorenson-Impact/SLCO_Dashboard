@@ -128,7 +128,8 @@ server <- function(input, output) {
 
 
 # Luke’s Wrangling --------------------------------------------------------
-sheet_reach <- gs_title("REACH Service Provider Report - Updated 05-10-19")
+# sheet_reach <- gs_title("REACH Service Provider Report - Updated.*")
+sheet_reach <- gs_key("11hR_tcHj_y3MUo79fkyEOgC3WXiRhCjGt38pLT5CdsQ") # I use the key here because the sheet title changes time to time to reflect the last time it was updated 
 reach_og <- sheet_reach %>%
   gs_read(ws = "Updated Service Report")
 

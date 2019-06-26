@@ -93,7 +93,7 @@ ui <- fluidPage(theme = shinytheme("paper"),
 # Define Server --------------------------------------------------------
 server <- function(input, output) {
   ax <- list(
-    title = 'Month',
+    title = 'Time Unit',
     zeroline = TRUE,
     showline = TRUE,
     zerolinewidth = 1,
@@ -102,7 +102,8 @@ server <- function(input, output) {
   
   # Wrangling ------------------------------------------------------
   
-  sheet_hnj <- gs_title("HNJ Service Provider Report_Updated")
+  # sheet_hnj <- gs_title("HNJ Service Provider Report_Updated")
+  sheet_hnj <- gs_key("1-wKEqtV9pT36Mq2nyGYH4qnGOORGCXmJWv2ALHiOxME") # I use gs_key here so that if the sheet title changes it wont affect the dashboard
   hnj19_og <- sheet_hnj %>%
     gs_read(ws = "2019-Present", check.names = FALSE) #check.name = false so as not to add on _1 _2 _3 etc after month names as the spreadsheet grows
   hnjpre19_og <- sheet_hnj %>% 
